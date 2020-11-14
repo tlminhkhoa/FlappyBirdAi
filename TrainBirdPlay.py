@@ -2,14 +2,12 @@ import pygame
 import sys
 import os
 import random
-import copy
-from NN import NeuralNetWork
 import pickle
-os.chdir("D:\Study\Machine Learning\Flappy bird")
+from NN import NeuralNetWork
+
 def drawBox():
     screen.blit(floor_surface,(floor_x,700))
     screen.blit(floor_surface,(floor_x + 576*scale_down,700))
-
 def create_pipe():
     random_pipe_pos = (random.randint(4,6)*100)
     bottom_pipe = pip_surface.get_rect(midtop = (700,random_pipe_pos))
@@ -30,7 +28,7 @@ def draw_pipes(pipes):
             flip_pipe = pygame.transform.flip(pip_surface,False,True)
             screen.blit(flip_pipe,pipe)
 
-def check_collision(pipes,bird):
+def check_collision(pipes):
     for pipe in pipes:
         if bird.rect.colliderect(pipe):
             return False
@@ -42,6 +40,10 @@ def check_collision(pipes,bird):
 def rotate_bird(bird):
     return pygame.transform.rotozoom(bird.surface,-bird.movement * 3,1)
 
+def bird_animation():
+    new_bird = bird_frames[bird_index]
+    new_bird_rect = new_bird.get_rect(center = (100,bird_rect.centery))
+    return new_bird,new_bird_rect
 
 def score_display(game_state):
 
@@ -59,7 +61,6 @@ def update_score(score,high_score):
     if score > high_score:
         high_score = score
     return high_score
-
 def apple_scale_down(Intuple):
     return (int(Intuple[0]*scale_down),int(Intuple[1]*scale_down))
         
@@ -70,6 +71,8 @@ def closest_pipe(pip_list):
     closest = 1000
     closestpipes = []
     currentID = 0
+    if pip_list == []:
+        return False
     for Ipipe in range(len(pip_list)):
         current = abs(pip_list[Ipipe].centerx - 36)
         if  current < closest and pip_list[Ipipe].centerx > 36 :
@@ -97,6 +100,8 @@ class Bird:
     def think(self):
 
         closestpipes = closest_pipe(pip_list)
+        if not closestpipes:
+            return False
         distToPipe = (closestpipes[0].centerx - self.rect.centerx )/ 600
         distToBottom = (closestpipes[0].centery - self.rect.centery )/ 784
         distToTop =  (closestpipes[1].centery - self.rect.centery )/ 784
@@ -104,94 +109,37 @@ class Bird:
         BrainInput = [distToPipe,distToBottom,distToTop,yCoordinate,self.movement/10] 
 
         self.brain.forwardPropagation(BrainInput)
-        return 
+        return True
     def jump(self):
-        self.think()
+        if not self.think():
+            return
         if self.brain.output[0][0] > self.brain.output[0][1]:
             newevent = pygame.event.Event(BIRDJUMP, message = self.id) #create the event
             pygame.event.post(newevent)
 
 
-def generate_clone(bestBird,n):
-    flock = []
-    for id in range(n):
-        newBird = Bird(id)
-        brain_structure = copy.deepcopy(bestBird.brain.denes_layers)
-        newBird.brain.constructFromSameDenses(brain_structure)
-        newBird.brain.weightMutation(0.5)
-        flock.append(newBird)
-    return flock
-
-
-def bestBirdsReturn(flock):
-    sortedFlock = sorted(flock, key=lambda bird: bird.score, reverse=True)
-    return sortedFlock[:10]
-
-def generate_new_generation_crossover(flock):
-    newflock = []
-    bestbirds = bestBirdsReturn(flock)
-    for bird in bestbirds:
-        newflock.append(generate_clone(bird,10))
-    
-    for i in range(len(newflock)):
-        newflock[i][0].mutate = True
-
-    m = 0
-    for i in range(len(newflock)):
-        m = i + 1
-        for j in range(len(newflock[0])):
-            if newflock[i][j].mutate == False:
-                k = searchUnmutatedBird(newflock[m])
-                newflock[i][j].brain.crossOverNN(0.4,newflock[m][k].brain)
-                newflock[i][j].mutate = True
-                newflock[m][k].mutate = True
-
-                m += 1
-
-
-    newflock = [item for sublist in newflock for item in sublist]
-    for bird in newflock:
-        bird.brain.weightMutation(0.5)
-    
-    GiveId = 0
-    for bird in newflock:
-        bird.id = GiveId
-        GiveId += 1
-
-        
-    # for bird in newflock:
-    #     print(bird.mutate)
-
-    return newflock
-
-
-def searchUnmutatedBird(gen):
-    for j in range(len(gen)):
-        if gen[j].mutate == False:
-            return j
-
-        
-
-    
-    
+os.chdir("D:\Study\Machine Learning\Flappy bird")
 
 pygame.mixer.pre_init(frequency = 44100 ,size = 16 ,channels = 1, buffer = 512)
 pygame.init()
-scale_down = 0.765625
-
-dimension = apple_scale_down((576,1024))
-# print(dimension)
-screen = pygame.display.set_mode(dimension)
+# screen = pygame.display.set_mode((576,1024))
 clock = pygame.time.Clock()
 game_font = pygame.font.Font("04B_19__.TTF",40)
-
+scale_down = 0.765625
+dimension = apple_scale_down((576,1024))
+screen = pygame.display.set_mode(dimension)
 
 # Variable
 gravity = 0.25*scale_down
 game_active = True
 score = 0
 high_score = 0
-BIRDJUMP = pygame.USEREVENT 
+BIRDJUMP = pygame.USEREVENT + 2
+
+with (open("trainBird.pkl", "rb")) as openfile:
+    BirdBrain = pickle.load(openfile)
+bird = Bird(1)
+bird.brain = BirdBrain
 
 bg_suface = pygame.image.load("assets/background-day.png").convert()
 bg_suface = pygame.transform.scale2x(bg_suface)
@@ -200,22 +148,26 @@ floor_surface = pygame.image.load("assets/base.png").convert()
 floor_surface = pygame.transform.scale2x(floor_surface)
 floor_x = 0 
 
-flock = []
-numberOfBirds = 100
-for id in range(numberOfBirds):
-    flock.append(Bird(id))
-    
-# bird = Bird(1)
+
+bird_downflap = pygame.transform.scale2x(pygame.image.load("assets/bluebird-downflap.png").convert_alpha())
+bird_midflap = pygame.transform.scale2x(pygame.image.load("assets/bluebird-midflap.png").convert_alpha())
+bird_upflap = pygame.transform.scale2x(pygame.image.load("assets/bluebird-upflap.png").convert_alpha())
+bird_frames = [bird_downflap,bird_midflap,bird_upflap]
+bird_index = 0
+bird_surface = bird_frames[bird_index]
+bird_rect = bird_surface.get_rect(center = (100,512))
+BIRDFLAP = pygame.USEREVENT +1 
+pygame.time.set_timer(BIRDFLAP,200)
+
 
 pip_surface = pygame.image.load("assets/pipe-green.png").convert()
 pip_surface = pygame.transform.scale2x(pip_surface)
 pip_list = []
-SPAWNPIPE = pygame.USEREVENT + 1
+SPAWNPIPE = pygame.USEREVENT
 pygame.time.set_timer(SPAWNPIPE,1200)
 
-game_over_surface = (pygame.image.load("assets/message.png").convert_alpha())
-game_over_surface = pygame.transform.scale(game_over_surface,(276,400))
-game_over_rect = game_over_surface.get_rect(center = apple_scale_down((288,512)))
+game_over_surface = pygame.transform.scale2x(pygame.image.load("assets/message.png").convert_alpha())
+game_over_rect = game_over_surface.get_rect(center = (288,512))
 
 
 flap_sound = pygame.mixer.Sound("sound/sfx_wing.wav")
@@ -224,102 +176,76 @@ score_sound = pygame.mixer.Sound("sound/sfx_point.wav")
 score_sound_countdown = 100
 pip_list.extend(create_pipe())
 
-gen = 0
-while True:
 
+while True:
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            bestScore = 0
-            for bird in flock:
-                if bird.score > bestScore:
-                    bestScore = bird.score
-                    bestBird = bird
-            with open('trainBird.pkl', 'wb') as output:
-                pickle.dump(bestBird.brain, output, pickle.HIGHEST_PROTOCOL)
             pygame.quit()
             sys.exit()
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP and game_active:
-                bird.movement = 0
-                bird.movement -= 6
-                
-
+            # if event.key == pygame.K_UP and game_active:
+            #     bird_movement = 0
+            #     bird_movement -= 10
+            #     flap_sound.play()
+            if event.key == pygame.K_UP and game_active == False:
+                game_active = True
+                pip_list.clear()
+                bird_rect.center = (100,512)
+                bird_movement = 0
+                score = 0 
         if event.type == BIRDJUMP:
-            for bird in flock:
-                if bird.id == event.message:
-                
-                    bird.movement = 0
-                    bird.movement -= 6
-
-        if event.type == SPAWNPIPE and game_active :
+            bird.movement = 0
+            bird.movement -= 6
+        if event.type == SPAWNPIPE:
             pip_list.extend(create_pipe())
-            if len(pip_list) > 6:
-                del pip_list[0]
-                del pip_list[1]    
-
+        if event.type == BIRDFLAP:
+            if bird_index < 2:
+                bird_index += 1
+            else:
+                bird_index = 0
+            
+            bird_surface,bird_rect = bird_animation()
+    
+    
     screen.blit(bg_suface,(0,0))
     
-    countBirdSurvived = 0
-    
-    listBirdStatus = [] 
+    # print(game_active)
     if game_active:
-        #Bird
-        for bird in flock:
-            listBirdStatus.append(bird.status)
-            if bird.status and pip_list: 
-                bird.jump()
-                bird.movement += gravity
-                rotated = rotate_bird(bird)
-                bird.falldown()
-                screen.blit(rotated,bird.rect)
-                bird.status = check_collision(pip_list,bird)
-                bird.score = score
-        
-        if pip_list:
+        bird.movement += gravity
+        rotated = rotate_bird(bird)
+        bird.falldown()
+        screen.blit(rotated,bird.rect)
+        game_active = check_collision(pip_list)
+        bird.jump()
+        bird.score = score
+
         #Pipes
-    
-            pip_list = move_pipes(closest_pipe(pip_list))
-            draw_pipes(closest_pipe(pip_list))
-            
-
-            score += 0.01
-            score_display("main_state")
-            score_sound_countdown -= 1
-            if score_sound_countdown <= 0:
-                score_sound_countdown = 100  
+        pip_list = move_pipes(pip_list)
+        draw_pipes(pip_list)
         
-        if not any(listBirdStatus):
-            game_active = False
+        score += 0.01
+        score_display("main_state")
+        score_sound_countdown -= 1
+        if score_sound_countdown <= 0:
+            score_sound.play()
+            score_sound_countdown = 100    
     else:
-        bestScore = 0
-        print(len(flock))
-        for bird in flock:
-            if bird.score > bestScore:
-                bestScore = bird.score
-                bestBird = bird
-        print(bestScore)
-       
-
-        flock = generate_new_generation_crossover(flock)
-        gen = gen + 1
-        print("generation", gen)
-
-        
-        score = 0 
-        game_active = True
-        pip_list.clear()
-        
+        # print("else")
+        # screen.blit(game_over_surface,game_over_rect)
+        high_score = update_score(score,high_score)
+        score_display("game_over")
         
 
 
-    
+
     #Floor
     floor_x = floor_x - 1 
-    if floor_x < -(576*scale_down) :
+    if floor_x < -576 :
         floor_x = 0 
     drawBox()
     
+    check_collision(pip_list)
     
     pygame.display.update()
     clock.tick(120)

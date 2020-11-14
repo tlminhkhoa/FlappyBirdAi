@@ -68,7 +68,7 @@ def update_score(score,high_score):
     return high_score
 
 
-os.chdir("D:\Tài liệu\Machine Learning\Flappy bird")
+os.chdir("D:\Study\Machine Learning\Flappy bird")
 
 pygame.mixer.pre_init(frequency = 44100 ,size = 16 ,channels = 1, buffer = 512)
 pygame.init()

@@ -4,8 +4,8 @@ import os
 import random
 import copy
 from NN import NeuralNetWork
-
-os.chdir("D:\Tài liệu\Machine Learning\Flappy bird")
+import pickle
+os.chdir("D:\Study\Machine Learning\Flappy bird")
 def drawBox():
     screen.blit(floor_surface,(floor_x,700))
     screen.blit(floor_surface,(floor_x + 576*scale_down,700))
@@ -69,13 +69,10 @@ def get_size_scale_surface(surface):
     return apple_scale_down((surface.get_width(), surface.get_height()))
 
 def closest_pipe(pip_list):
-    # print(pip_list)
     closest = 1000
     closestpipes = []
     currentID = 0
-        # print(pip_list)
     for Ipipe in range(len(pip_list)):
-            # print(Ipipe)
         current = abs(pip_list[Ipipe].centerx - 36)
         if  current < closest and pip_list[Ipipe].centerx > 36 :
             closest = current
@@ -105,12 +102,10 @@ class Bird:
         distToTop =  (closestpipes[1].centery - self.rect.centery )/ 784
         yCoordinate = self.rect.centery/  784
         BrainInput = [distToPipe,distToBottom,distToTop,yCoordinate,self.movement/10] 
-        # print(BrainInput)
         self.brain.forwardPropagation(BrainInput)
         return 
     def jump(self):
         self.think()
-        # print("output",self.brain.output)
         if self.brain.output[0][0] > self.brain.output[0][1]:
             newevent = pygame.event.Event(BIRDJUMP, message = self.id) #create the event
             pygame.event.post(newevent)
@@ -124,7 +119,6 @@ def generate_new_generation(bestBird):
         newBird.brain.constructFromSameDenses(brain_structure)
         newBird.brain.weightMutation(0.5)
         flock.append(newBird)
-    # flock[0].brain.denes_layers[0].test  = random.randint(3,7)
     return flock
 
 
@@ -134,7 +128,6 @@ pygame.init()
 scale_down = 0.765625
 
 dimension = apple_scale_down((576,1024))
-# print(dimension)
 screen = pygame.display.set_mode(dimension)
 clock = pygame.time.Clock()
 game_font = pygame.font.Font("04B_19__.TTF",40)
@@ -159,7 +152,6 @@ numberOfBirds = 100
 for id in range(numberOfBirds):
     flock.append(Bird(id))
     
-# bird = Bird(1)
 
 pip_surface = pygame.image.load("assets/pipe-green.png").convert()
 pip_surface = pygame.transform.scale2x(pip_surface)
@@ -184,6 +176,15 @@ while True:
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            bestScore = 0
+
+            for bird in flock:
+                if bird.score > bestScore:
+                    bestScore = bird.score
+                    bestBird = bird
+                with open('trainBird.pkl', 'wb') as output:
+                    pickle.dump(bestBird.brain, output, pickle.HIGHEST_PROTOCOL)
+
             pygame.quit()
             sys.exit()
         if event.type == pygame.KEYDOWN:
@@ -201,7 +202,6 @@ while True:
 
         if event.type == SPAWNPIPE and game_active :
             pip_list.extend(create_pipe())
-            # print(pip_list[0].centerx)
             if len(pip_list) > 6:
                 del pip_list[0]
                 del pip_list[1]    
@@ -209,16 +209,13 @@ while True:
     screen.blit(bg_suface,(0,0))
     
     countBirdSurvived = 0
-    # print(game_active)
     
     listBirdStatus = [] 
     if game_active:
-        # print(pip_list)
-        # print("replay",len(flock))
+
         #Bird
         for bird in flock:
             listBirdStatus.append(bird.status)
-            # print("check bird")
             if bird.status and pip_list: 
                 bird.jump()
                 bird.movement += gravity
@@ -229,16 +226,11 @@ while True:
                 bird.score = score
 
         
-        # print(listBirdStatus)
-
         
         if pip_list:
         #Pipes
-            # print("before",pip_list[0].centerx) 
             pip_list = move_pipes((pip_list))
             draw_pipes((pip_list))
-            # print("after",pip_list[0].centerx)
-
             score += 0.01
             score_display("main_state")
             score_sound_countdown -= 1
@@ -249,14 +241,6 @@ while True:
         if not any(listBirdStatus):
             game_active = False
     else:
-
-        # screen.blit(game_over_surface,game_over_rect)
-        # high_score = update_score(score,high_score)
-        # score_display("game_over")
-        
-        # print(pip_list)
-        # print("game over")
-    
         bestScore = 0
 
         for bird in flock:
@@ -275,10 +259,6 @@ while True:
         game_active = True
         pip_list.clear()
         
-        
-
-
-    
     #Floor
     floor_x = floor_x - 1 
     if floor_x < -(576*scale_down) :
