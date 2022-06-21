@@ -6,7 +6,7 @@ import copy
 from NN import NeuralNetWork
 import pickle
 import json
-os.chdir("D:\Study\Machine Learning\Flappy bird")
+# os.chdir("D:\Study\Machine Learning\Flappy bird")
 
 # Since each monitor has different solution, please adjust this for the best size
 scale_down = 0.765625
