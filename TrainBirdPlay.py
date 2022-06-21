@@ -5,6 +5,11 @@ import random
 import pickle
 from NN import NeuralNetWork
 
+scale_down = 0.765625
+gravity = 0.25*scale_down
+pipe_spawn_time = 1700
+clock_tick = 120
+
 def drawBox():
     screen.blit(floor_surface,(floor_x,700))
     screen.blit(floor_surface,(floor_x + 576*scale_down,700))
@@ -122,19 +127,19 @@ os.chdir("D:\Study\Machine Learning\Flappy bird")
 
 pygame.mixer.pre_init(frequency = 44100 ,size = 16 ,channels = 1, buffer = 512)
 pygame.init()
-# screen = pygame.display.set_mode((576,1024))
-clock = pygame.time.Clock()
-game_font = pygame.font.Font("04B_19__.TTF",40)
-scale_down = 0.765625
+
 dimension = apple_scale_down((576,1024))
 screen = pygame.display.set_mode(dimension)
+clock = pygame.time.Clock()
+game_font = pygame.font.Font("./Fonts/04B_19__.TTF",40)
+
+
 
 # Variable
-gravity = 0.25*scale_down
 game_active = True
 score = 0
 high_score = 0
-BIRDJUMP = pygame.USEREVENT + 2
+BIRDJUMP = pygame.USEREVENT
 
 with (open("trainBird.pkl", "rb")) as openfile:
     BirdBrain = pickle.load(openfile)
@@ -156,15 +161,15 @@ bird_frames = [bird_downflap,bird_midflap,bird_upflap]
 bird_index = 0
 bird_surface = bird_frames[bird_index]
 bird_rect = bird_surface.get_rect(center = (100,512))
-BIRDFLAP = pygame.USEREVENT +1 
+BIRDFLAP = pygame.USEREVENT + 2
 pygame.time.set_timer(BIRDFLAP,200)
 
 
 pip_surface = pygame.image.load("assets/pipe-green.png").convert()
 pip_surface = pygame.transform.scale2x(pip_surface)
 pip_list = []
-SPAWNPIPE = pygame.USEREVENT
-pygame.time.set_timer(SPAWNPIPE,1200)
+SPAWNPIPE = pygame.USEREVENT + 1
+pygame.time.set_timer(SPAWNPIPE,pipe_spawn_time)
 
 game_over_surface = pygame.transform.scale2x(pygame.image.load("assets/message.png").convert_alpha())
 game_over_rect = game_over_surface.get_rect(center = apple_scale_down((288,512)))
@@ -226,10 +231,10 @@ while True:
         
         score += 0.01
         score_display("main_state")
-        score_sound_countdown -= 1
-        if score_sound_countdown <= 0:
-            score_sound.play()
-            score_sound_countdown = 100    
+        # score_sound_countdown -= 1
+        # if score_sound_countdown <= 0:
+            # score_sound.play()
+            # score_sound_countdown = 100    
     else:
         # print("else")
         # screen.blit(game_over_surface,game_over_rect)
@@ -241,11 +246,11 @@ while True:
 
     #Floor
     floor_x = floor_x - 1 
-    if floor_x < -576 :
+    if floor_x < -(576*scale_down) :
         floor_x = 0 
     drawBox()
     
     check_collision(pip_list)
     
     pygame.display.update()
-    clock.tick(120)
+    clock.tick(clock_tick)

@@ -7,12 +7,22 @@ from NN import NeuralNetWork
 import pickle
 import json
 os.chdir("D:\Study\Machine Learning\Flappy bird")
+
+# Since each monitor has different solution, please adjust this for the best size
+scale_down = 0.765625
+gravity = 0.25*scale_down
+pipe_spawn_time = 870
+clock_tick = 120
+
+
+
+
 def drawBox():
     screen.blit(floor_surface,(floor_x,700))
     screen.blit(floor_surface,(floor_x + 576*scale_down,700))
 
 def create_pipe():
-    random_pipe_pos = (random.randint(3,6)*100)
+    random_pipe_pos = (random.randint(3,5)*100)
     bottom_pipe = pip_surface.get_rect(midtop = (700,random_pipe_pos))
     top_pipe = pip_surface.get_rect(midbottom = (700,random_pipe_pos - 150))
     return bottom_pipe,top_pipe
@@ -184,21 +194,19 @@ def searchUnmutatedBird(gen):
 
     
     
-
+# Create a game
 pygame.mixer.pre_init(frequency = 44100 ,size = 16 ,channels = 1, buffer = 512)
 pygame.init()
 
-scale_down = 0.765625
+
 
 dimension = apple_scale_down((576,1024))
-# print(dimension)
 screen = pygame.display.set_mode(dimension)
 clock = pygame.time.Clock()
-game_font = pygame.font.Font("04B_19__.TTF",40)
+game_font = pygame.font.Font("./Fonts/04B_19__.TTF",40)
 
 
 # Variable
-gravity = 0.25*scale_down
 game_active = True
 score = 0
 high_score = 0
@@ -224,7 +232,7 @@ pip_surface = pygame.image.load("assets/pipe-green.png").convert()
 pip_surface = pygame.transform.scale2x(pip_surface)
 pip_list = []
 SPAWNPIPE = pygame.USEREVENT + 1
-pygame.time.set_timer(SPAWNPIPE,870)
+pygame.time.set_timer(SPAWNPIPE,pipe_spawn_time)
 
 game_over_surface = (pygame.image.load("assets/message.png").convert_alpha())
 game_over_surface = pygame.transform.scale(game_over_surface,(276,400))
@@ -341,4 +349,4 @@ while True:
     
     
     pygame.display.update()
-    clock.tick(120)
+    clock.tick(clock_tick)
