@@ -48,7 +48,7 @@ class NeuralNetWork:
                 layer.forward(inputs)
             else:
                 layer.forward(self.output)
-            self.output = self.sigmoidActivation(layer.output)
+            self.output = self.tanhActivation(layer.output)
 
     def constructFromSameDenses(self,outside_denes_layers):
         self.denes_layers = outside_denes_layers

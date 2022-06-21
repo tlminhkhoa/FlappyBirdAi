@@ -5,13 +5,14 @@ import random
 import copy
 from NN import NeuralNetWork
 import pickle
+import json
 os.chdir("D:\Study\Machine Learning\Flappy bird")
 def drawBox():
     screen.blit(floor_surface,(floor_x,700))
     screen.blit(floor_surface,(floor_x + 576*scale_down,700))
 
 def create_pipe():
-    random_pipe_pos = (random.randint(4,6)*100)
+    random_pipe_pos = (random.randint(3,6)*100)
     bottom_pipe = pip_surface.get_rect(midtop = (700,random_pipe_pos))
     top_pipe = pip_surface.get_rect(midbottom = (700,random_pipe_pos - 150))
     return bottom_pipe,top_pipe
@@ -118,7 +119,7 @@ def generate_clone(bestBird,n):
         newBird = Bird(id)
         brain_structure = copy.deepcopy(bestBird.brain.denes_layers)
         newBird.brain.constructFromSameDenses(brain_structure)
-        newBird.brain.weightMutation(0.5)
+        # newBird.brain.weightMutation(0.5)
         flock.append(newBird)
     return flock
 
@@ -133,8 +134,11 @@ def generate_new_generation_crossover(flock):
     for bird in bestbirds:
         newflock.append(generate_clone(bird,10))
     
+ 
     for i in range(len(newflock)):
         newflock[i][0].mutate = True
+
+    
 
     m = 0
     for i in range(len(newflock)):
@@ -145,23 +149,29 @@ def generate_new_generation_crossover(flock):
                 newflock[i][j].brain.crossOverNN(0.4,newflock[m][k].brain)
                 newflock[i][j].mutate = True
                 newflock[m][k].mutate = True
-
+                
+                # print("pair i,j",i,j)
+                # print("pair m,k",m,k)
                 m += 1
 
+    # try to reserve the original bird
+    for i in range(len(newflock)):
+        newflock[i][0].mutate = False
 
     newflock = [item for sublist in newflock for item in sublist]
+    
+    # here
     for bird in newflock:
-        bird.brain.weightMutation(0.5)
+        if bird.mutate == True:
+            bird.brain.weightMutation(0.3)
+        
     
     GiveId = 0
     for bird in newflock:
         bird.id = GiveId
         GiveId += 1
 
-        
-    # for bird in newflock:
-    #     print(bird.mutate)
-
+    # print("len",len(newflock))
     return newflock
 
 
@@ -177,6 +187,7 @@ def searchUnmutatedBird(gen):
 
 pygame.mixer.pre_init(frequency = 44100 ,size = 16 ,channels = 1, buffer = 512)
 pygame.init()
+
 scale_down = 0.765625
 
 dimension = apple_scale_down((576,1024))
@@ -207,11 +218,13 @@ for id in range(numberOfBirds):
     
 # bird = Bird(1)
 
+
+
 pip_surface = pygame.image.load("assets/pipe-green.png").convert()
 pip_surface = pygame.transform.scale2x(pip_surface)
 pip_list = []
 SPAWNPIPE = pygame.USEREVENT + 1
-pygame.time.set_timer(SPAWNPIPE,1200)
+pygame.time.set_timer(SPAWNPIPE,870)
 
 game_over_surface = (pygame.image.load("assets/message.png").convert_alpha())
 game_over_surface = pygame.transform.scale(game_over_surface,(276,400))
@@ -225,8 +238,9 @@ score_sound_countdown = 100
 pip_list.extend(create_pipe())
 
 gen = 0
-while True:
 
+bestScores = []
+while True:
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -237,6 +251,11 @@ while True:
                     bestBird = bird
             with open('trainBird.pkl', 'wb') as output:
                 pickle.dump(bestBird.brain, output, pickle.HIGHEST_PROTOCOL)
+            
+
+            with open('scores.txt', 'w') as f:
+                f.write(json.dumps(bestScores))
+
             pygame.quit()
             sys.exit()
         if event.type == pygame.KEYDOWN:
@@ -293,11 +312,11 @@ while True:
             game_active = False
     else:
         bestScore = 0
-        print(len(flock))
         for bird in flock:
             if bird.score > bestScore:
                 bestScore = bird.score
                 bestBird = bird
+        bestScores.append(bestScore)
         print(bestScore)
        
 

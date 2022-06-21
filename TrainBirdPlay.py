@@ -9,7 +9,7 @@ def drawBox():
     screen.blit(floor_surface,(floor_x,700))
     screen.blit(floor_surface,(floor_x + 576*scale_down,700))
 def create_pipe():
-    random_pipe_pos = (random.randint(4,6)*100)
+    random_pipe_pos = (random.randint(3,5)*100)
     bottom_pipe = pip_surface.get_rect(midtop = (700,random_pipe_pos))
     top_pipe = pip_surface.get_rect(midbottom = (700,random_pipe_pos - 150))
     return bottom_pipe,top_pipe
@@ -167,7 +167,7 @@ SPAWNPIPE = pygame.USEREVENT
 pygame.time.set_timer(SPAWNPIPE,1200)
 
 game_over_surface = pygame.transform.scale2x(pygame.image.load("assets/message.png").convert_alpha())
-game_over_rect = game_over_surface.get_rect(center = (288,512))
+game_over_rect = game_over_surface.get_rect(center = apple_scale_down((288,512)))
 
 
 flap_sound = pygame.mixer.Sound("sound/sfx_wing.wav")
