@@ -11,15 +11,16 @@
     <img 
     width=""
     height="300"
-    src="https://github.com/tlminhkhoa/FlappyBirdAi/blob/master/assets/background-day.png?raw=true"
+    src="https://user-images.githubusercontent.com/40111341/175171926-3ae4ffb1-da85-492b-a065-d3d479146223.gif"
   ></p>
+  
+---
 
-![permalink setting demo](https://i.imgur.com/PjUhQBB.gif)
 - Table of Content
   * [Demo](#demo)
   * [Result Analysis](#result-analysis)
   * [Installation](#installation)
-  * [How it work](#-memo--how-it-work)
+  * [:memo: How it work](#-memo--how-it-work)
     + [The Neural Network](#the-neural-network)
     + [The Neat-inspired algorithm](#the-neat-inspired-algorithm)
       - [Fitness function](#fitness-function)
@@ -38,17 +39,9 @@
 ## Demo
 
 - Demo on local computer
+:arrow_down: :arrow_down: :arrow_down: 
 
-{%youtube PJuNmlE74BQ %}
-
-<p style="text-align: center">
-    <img 
-    width=""
-    height=""
-    src="https://img.youtube.com/vi/6FgEOQWLv_w/maxresdefault.jpg"
-        herf = "https://www.youtube.com/watch?v=6FgEOQWLv_w"
-></p>
-
+[![IMAGE ALT TEXT](http://img.youtube.com/vi/6FgEOQWLv_w/maxresdefault.jpg)](https://www.youtube.com/watch?v=6FgEOQWLv_w) "Video Title")
 ## Result Analysis 
 
 ## Installation
@@ -95,7 +88,7 @@ The following is the default parameter for each bird:
 Each of these parameters can be changed through the input variable.
 
 
- <p style="text-align: center">
+ <p align="center">
     <img 
     width="750"
     height=""
@@ -107,14 +100,14 @@ Each of these parameters can be changed through the input variable.
 
  The bird vision contains 5 views (input):
  
- <p style="text-align: center">
+ <p align="center">
     <img 
     width=""
     height=""
     src="https://i.imgur.com/hTdUt7c.png"
   ></p>
   
- <p style="text-align: center">
+ <p align="center">
     <img 
     width=""
     height=""
@@ -136,7 +129,7 @@ Mutation is the ability of the bird to change its genetic by itself through gene
 
 This is achievable by randomly (mutation rate) modify the weight of each bird by a small margin (mutation margin).
 
- <p style="text-align: center">
+ <p align="center">
     <img 
     width="400"
     height=""
@@ -148,7 +141,7 @@ A loop is created to go through each bird weight matrix. At each weight, a rando
 
 
 
- <p style="text-align: center">
+ <p align="center">
     <img 
     width=""
     height=""
@@ -170,7 +163,7 @@ With the combination of the three steps, hopefully, the algorithm successfully m
 From each round, the top 10 birds with the highest fitness are selected. Each bird will be replicated 10 times using deep copy. This produces a new flock of 100, 10 of each type of bird.
 
 
-<p style="text-align: center">
+<p align="center">
     <img 
     width=""
     height=""
@@ -184,7 +177,7 @@ From each round, the top 10 birds with the highest fitness are selected. Each bi
 Now since we have a new flock of 100 birds, 10 of each, the next task is to pair them with each other to create “families”. The method is simple, but a bit hard to explain.
 
 
-<p style="text-align: center">
+<p align="center">
     <img 
     width=""
     height=""
@@ -194,7 +187,7 @@ Now since we have a new flock of 100 birds, 10 of each, the next task is to pair
 
 The second step boiled down to the problem of generating unique 45 pairs from 90 birds. We can view the flock of birds as a 9x9 matrix. The algorithm simply pairs the n row with the (n+1) column.
 
-<p style="text-align: center">
+<p align="center">
     <img 
     width=""
     height=""
@@ -209,7 +202,7 @@ Cross-swap provides a way for a pair of birds to exchange information. It archiv
 Again the weights of 2 neural networks can be view as 2 matrixes. There is a 40% chance (swap rate) that an individual weight from the first matrix will be swapped the weight in the same coordinate from the second matrix.
 
 
-<p style="text-align: center">
+<p align="center">
     <img 
     width=""
     height=""
