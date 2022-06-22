@@ -7,7 +7,7 @@
 
 
 
-<p style="text-align: center">
+<p align="center">
     <img 
     width=""
     height="300"
@@ -15,8 +15,7 @@
   ></p>
 
 ![permalink setting demo](https://i.imgur.com/PjUhQBB.gif)
-- Table of Content
-[ToC]
+- Table of Content [ToC]
 
 ---
 
@@ -27,6 +26,14 @@
 - Demo on local computer
 
 {%youtube PJuNmlE74BQ %}
+
+<p style="text-align: center">
+    <img 
+    width=""
+    height=""
+    src="https://img.youtube.com/vi/6FgEOQWLv_w/maxresdefault.jpg"
+        herf = "https://www.youtube.com/watch?v=6FgEOQWLv_w"
+></p>
 
 ## Result Analysis 
 
