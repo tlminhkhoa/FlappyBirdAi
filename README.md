@@ -217,8 +217,7 @@ This is my first homemade game, fortunately, tutorials are abundant for this int
 
 The Clear Code youtube channel has a great tutorial on this. Following his instruction and assets, I was able to make a replica within a day.
 
-{%youtube UZg49z76cLw %}
-
+[![IMAGE ALT TEXT](http://img.youtube.com/vi/UZg49z76cLw/maxresdefault.jpg)](https://www.youtube.com/watch?v=UZg49z76cLw) 
 
 Sorry if my code is a bit messy for anyone looking through them :( .
 
