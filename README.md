@@ -41,7 +41,7 @@
 - Demo on local computer
 :arrow_down: :arrow_down: :arrow_down: 
 
-[![IMAGE ALT TEXT](http://img.youtube.com/vi/6FgEOQWLv_w/maxresdefault.jpg)](https://www.youtube.com/watch?v=6FgEOQWLv_w) "Video Title")
+[![IMAGE ALT TEXT](http://img.youtube.com/vi/6FgEOQWLv_w/maxresdefault.jpg)](https://www.youtube.com/watch?v=6FgEOQWLv_w) 
 ## Result Analysis 
 
 ## Installation
