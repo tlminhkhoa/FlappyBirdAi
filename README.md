@@ -15,7 +15,21 @@
   ></p>
 
 ![permalink setting demo](https://i.imgur.com/PjUhQBB.gif)
-- Table of Content [ToC]
+- Table of Content
+  * [Demo](#demo)
+  * [Result Analysis](#result-analysis)
+  * [Installation](#installation)
+  * [How it work](#-memo--how-it-work)
+    + [The Neural Network](#the-neural-network)
+    + [The Neat-inspired algorithm](#the-neat-inspired-algorithm)
+      - [Fitness function](#fitness-function)
+      - [Mutation process](#mutation-process)
+      - [Cross-Over process](#cross-over-process)
+        * [Replication](#replication)
+        * [Pairing](#pairing)
+        * [Cross-Swap](#cross-swap)
+    + [The Game](#the-game)
+  * [Acknowledgements](#acknowledgements)
 
 ---
 
