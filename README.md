@@ -18,7 +18,6 @@
 
 - Table of Content
   * [Demo](#demo)
-  * [Result Analysis](#result-analysis)
   * [Installation](#installation)
   * [:memo: How it work](#-memo--how-it-work)
     + [The Neural Network](#the-neural-network)
@@ -42,7 +41,6 @@
 :arrow_down: :arrow_down: :arrow_down: 
 
 [![IMAGE ALT TEXT](http://img.youtube.com/vi/6FgEOQWLv_w/maxresdefault.jpg)](https://www.youtube.com/watch?v=6FgEOQWLv_w) 
-## Result Analysis 
 
 ## Installation
 
